@@ -28,7 +28,7 @@ class Video:
         return self.title
 
     def __repr__(self):
-        return "'"+self.title+"'"
+        return "'" + self.title + "'"
 
 
 class UrTube:
@@ -101,9 +101,7 @@ class UrTube:
         return [video for video in self.videos if title.lower() in video.title.lower()]
 
 
-
 if __name__ == '__main__':
-
     ur = UrTube()
     v1 = Video('Лучший язык программирования 2024 года', 200)
     v2 = Video('Для чего девушкам парень программист?', 10, adult_mode=True)
