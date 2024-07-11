@@ -28,15 +28,15 @@ class Video:
         return self.title
 
     def __repr__(self):
-        return "'" + self.title + "'"
+        return f"'{self.title}'"
 
 
 class UrTube:
-    users = []
-    videos = []
 
     def __init__(self):
         self.current_user = None
+        self.users = []
+        self.videos = []
 
     def register(self, nickname, password, age):
         if self.is_user(nickname):
@@ -55,7 +55,7 @@ class UrTube:
                 self.current_user = user
                 print(f"Вы успешно вошли как {nickname}.")
                 return
-            print(f"Неверный логин или пароль.")
+        print(f"Неверный логин или пароль.")
         return
 
     def log_out(self):
@@ -70,12 +70,11 @@ class UrTube:
         return False
 
     def add(self, *videos):
-        for video in videos:
-            if video not in self.videos:
-                self.videos.append(video)
+        new_videos = [video for video in videos if video.title.lower() not in [x.title.lower() for x in self.videos]]
+        self.videos.extend(new_videos)
 
     def watch_video(self, title):
-        if self.current_user is None:
+        if not self.current_user:
             print('Вы не авторизованы')
             return
         current_video = self.find_video_by_title(title)
@@ -85,8 +84,8 @@ class UrTube:
         if current_video.adult_mode and self.current_user.age < 18:
             print('Вы не можете смотреть взрослый контент')
             return
-        for t in range(current_video.time_now, current_video.duration + 1):
-            print(f'Время воспроизведения : {t} из {current_video.duration}')
+        for current_video.time_now in range(current_video.time_now, current_video.duration + 1):
+            print(f'Время воспроизведения : {current_video.time_now} из {current_video.duration}')
             time.sleep(1.0)
         print('Конец воспроизведения')
         current_video.time_now = 0
@@ -97,21 +96,27 @@ class UrTube:
                 return video
         return None
 
-    def get_videos(self, title):
+    def get_videos(self, title=''):  # по умолчанию выводит все видеоролики
         return [video for video in self.videos if title.lower() in video.title.lower()]
 
 
 if __name__ == '__main__':
     ur = UrTube()
     v1 = Video('Лучший язык программирования 2024 года', 200)
-    v2 = Video('Для чего девушкам парень программист?', 10, adult_mode=True)
+    v2 = Video('Для чего девушкам парень программист?', 5, adult_mode=True)
 
     # Добавление видео
     ur.add(v1, v2)
 
+    # попытка записи видео с существующим названием, но другой продолжительностью
+    v3 = Video('Для чего девушкам парень программист?', 17, adult_mode=True)
+    v4 = Video('Лучший вебинар по программированию', 100, adult_mode=False)
+    v5 = Video('Как правильно написать резюме', 15, adult_mode=True)
+    ur.add(v3, v4, v5)
     # Проверка поиска
     print(ur.get_videos('лучший'))
     print(ur.get_videos('ПРОГ'))
+    print(ur.get_videos())
 
     # Проверка на вход пользователя и возрастное ограничение
     ur.watch_video('Для чего девушкам парень программист?')
