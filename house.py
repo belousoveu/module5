@@ -1,4 +1,11 @@
 class House:
+    houses_history = []
+    houses_changes_history = []
+
+    def __new__(cls, *args, **kwargs):
+        cls.houses_history.append(args[0])
+        cls.houses_changes_history.append(("Создание нового дома", *args))
+        return super().__new__(cls)
 
     def __init__(self, name, number_of_floors):
         self.name = name
@@ -14,6 +21,10 @@ class House:
     def __len__(self):
         return self.number_of_floors
 
+    def __del__(self):
+        self.houses_changes_history.append(("Снос дома", self.name, 0))
+        print(f'Дом {self.name} был снесен, но останется в истории')
+
     def __eq__(self, other):
         if isinstance(other, House):
             return self.number_of_floors == other.number_of_floors
@@ -25,6 +36,7 @@ class House:
     def __add__(self, other):
         if isinstance(other, int) or isinstance(other, float):
             self.number_of_floors = int(self.number_of_floors + other)
+            self.__class__.houses_changes_history.append(("Реконструкция дома", self.name, self.number_of_floors))
         return self
 
     def __iadd__(self, other):
@@ -36,6 +48,7 @@ class House:
     def __sub__(self, other):
         if isinstance(other, int) or isinstance(other, float):
             self.number_of_floors = int(self.number_of_floors - other)
+            self.__class__.houses_changes_history.append(("Реконструкция дома", self.name, self.number_of_floors))
         return self
 
     def __isub__(self, other):
@@ -47,6 +60,7 @@ class House:
     def __mul__(self, other):
         if isinstance(other, int) or isinstance(other, float):
             self.number_of_floors = int(self.number_of_floors * other)
+            self.__class__.houses_changes_history.append(("Реконструкция дома", self.name, self.number_of_floors))
         return self
 
     def __imul__(self, other):
@@ -58,6 +72,7 @@ class House:
     def __truediv__(self, other):
         if isinstance(other, int) or isinstance(other, float):
             self.number_of_floors = int(self.number_of_floors / other)
+            self.__class__.houses_changes_history.append(("Реконструкция дома", self.name, self.number_of_floors))
         return self
 
     def __itruediv__(self, other):
@@ -69,6 +84,7 @@ class House:
     def __floordiv__(self, other):
         if isinstance(other, int) or isinstance(other, float):
             self.number_of_floors = int(self.number_of_floors // other)
+            self.__class__.houses_changes_history.append(("Реконструкция дома", self.name, self.number_of_floors))
         return self
 
     def __ifloordiv__(self, other):
@@ -80,6 +96,7 @@ class House:
     def __mod__(self, other):
         if isinstance(other, int) or isinstance(other, float):
             self.number_of_floors = int(self.number_of_floors % other)
+            self.__class__.houses_changes_history.append(("Реконструкция дома", self.name, self.number_of_floors))
         return self
 
     def __imod__(self, other):
@@ -91,6 +108,7 @@ class House:
     def __pow__(self, other):
         if isinstance(other, int) or isinstance(other, float):
             self.number_of_floors = int(self.number_of_floors ** other)
+            self.__class__.houses_changes_history.append(("Реконструкция дома", self.name, self.number_of_floors))
         return self
 
     def __ipow__(self, other):
@@ -161,3 +179,8 @@ class House:
             return
         self.current_floor = new_floor
         print(f'Лифт приехал на этаж : {self.current_floor} ')
+
+    @classmethod
+    def get_changes_history(cls, name=''):
+        changes_history = [x for x in cls.houses_changes_history if name.lower() in x[1].lower()]
+        return changes_history
